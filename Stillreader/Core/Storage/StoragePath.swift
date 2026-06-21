@@ -34,6 +34,8 @@ enum StoragePath {
         "\(state)/\(shard(for: slug))/\(slug).md"
     }
 
+    static let meta = "\(stillreaderMeta)/meta.yaml"
+
     static func link(filename: String, saved: Date) -> String {
         let calendar = Calendar(identifier: .gregorian)
         let year = calendar.component(.year, from: saved)
