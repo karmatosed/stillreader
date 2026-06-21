@@ -37,6 +37,10 @@ targets:
       - package: GRDB
         product: GRDB
       - package: Yams
+      - target: StillreaderShareExtension
+        embed: true
+        codeSign: true
+        destinationFilters: [iOS]
     entitlements:
       path: Stillreader.entitlements
     settings:
@@ -68,6 +72,31 @@ targets:
         TEST_HOST: $(BUILT_PRODUCTS_DIR)/Stillreader.app/Contents/MacOS/Stillreader
         TEST_HOST[sdk=iphone*]: $(BUILT_PRODUCTS_DIR)/Stillreader.app/Stillreader
         TEST_HOST[sdk=iphonesimulator*]: $(BUILT_PRODUCTS_DIR)/Stillreader.app/Stillreader
+
+  StillreaderShareExtension:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: StillreaderShareExtension
+      - path: Stillreader/Core/Markdown
+      - path: Stillreader/Core/Storage
+      - path: Stillreader/Core/Utilities
+      - path: Stillreader/Models
+    dependencies:
+      - package: Yams
+    entitlements:
+      path: StillreaderShareExtension/ShareExtension.entitlements
+    info:
+      path: StillreaderShareExtension/Info.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.stillreader.app.share
+        CODE_SIGN_ENTITLEMENTS: StillreaderShareExtension/ShareExtension.entitlements
+        SKIP_INSTALL: YES
+      configs:
+        Debug:
+          CODE_SIGNING_ALLOWED: NO
+          CODE_SIGN_ENTITLEMENTS: ""
 
 schemes:
   Stillreader:

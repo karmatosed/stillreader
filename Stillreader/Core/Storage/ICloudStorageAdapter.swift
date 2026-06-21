@@ -4,25 +4,10 @@ final class ICloudStorageAdapter: StorageProvider, @unchecked Sendable {
     private let localAdapter: LocalStorageAdapter
     private(set) var isCloudAvailable: Bool
 
-    init(
-        containerIdentifier: String = "iCloud.com.stillreader.app",
-        fallbackRoot: URL? = nil,
-        fileManager: FileManager = .default
-    ) {
-        let rootURL: URL
-        if let container = fileManager.url(forUbiquityContainerIdentifier: containerIdentifier) {
-            rootURL = container.appendingPathComponent("Documents/Stillreader", isDirectory: true)
-            isCloudAvailable = true
-        } else if let fallbackRoot {
-            rootURL = fallbackRoot
-            isCloudAvailable = false
-        } else {
-            let appSupport = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-            rootURL = appSupport.appendingPathComponent("Stillreader", isDirectory: true)
-            isCloudAvailable = false
-        }
-
-        localAdapter = LocalStorageAdapter(rootURL: rootURL, fileManager: fileManager)
+    init(fileManager: FileManager = .default) {
+        let resolved = SharedStorageRoot.resolve(fileManager: fileManager)
+        localAdapter = LocalStorageAdapter(rootURL: resolved.url, fileManager: fileManager)
+        isCloudAvailable = resolved.usesICloud
     }
 
     func ensureLayout() async throws {
