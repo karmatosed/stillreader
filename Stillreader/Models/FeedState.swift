@@ -18,7 +18,7 @@ struct FeedState: Equatable, Sendable {
         self.updated = updated
         self.items = items
         self.slug = slug
-        self.filePath = filePath ?? "state/\(slug).md"
+        self.filePath = filePath ?? StoragePath.feedState(slug)
     }
 
     init(from document: MarkdownDocument) throws {
@@ -43,9 +43,7 @@ struct FeedState: Equatable, Sendable {
             items = []
         }
 
-        slug = document.path
-            .replacingOccurrences(of: "state/", with: "")
-            .replacingOccurrences(of: ".md", with: "")
+        slug = StoragePath.slugFromPath(document.path)
         filePath = document.path
     }
 }

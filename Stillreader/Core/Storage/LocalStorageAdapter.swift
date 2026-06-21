@@ -13,6 +13,15 @@ final class LocalStorageAdapter: StorageProvider, @unchecked Sendable {
         rootURL.appendingPathComponent(path)
     }
 
+    private func relativePath(for fileURL: URL) -> String {
+        let root = rootURL.standardizedFileURL.path
+        let full = fileURL.standardizedFileURL.path
+        guard full.hasPrefix(root + "/") else {
+            return fileURL.lastPathComponent
+        }
+        return String(full.dropFirst(root.count + 1))
+    }
+
     func ensureLayout() async throws {
         for directory in StoragePath.layoutDirectories {
             try fileManager.createDirectory(
@@ -46,21 +55,27 @@ final class LocalStorageAdapter: StorageProvider, @unchecked Sendable {
         }
     }
 
+    /// Lists all `.md` files under `prefix`, recursively (supports sharded subfolders).
     func list(prefix: String) async throws -> [String] {
         let directoryURL = url(for: prefix)
         guard fileManager.fileExists(atPath: directoryURL.path) else {
             return []
         }
 
-        let urls = try fileManager.contentsOfDirectory(
+        guard let enumerator = fileManager.enumerator(
             at: directoryURL,
-            includingPropertiesForKeys: nil
-        )
+            includingPropertiesForKeys: [.isRegularFileKey],
+            options: [.skipsHiddenFiles]
+        ) else {
+            return []
+        }
 
-        return urls
-            .filter { $0.pathExtension == "md" }
-            .map { prefix + $0.lastPathComponent }
-            .sorted()
+        var results: [String] = []
+        for case let fileURL as URL in enumerator {
+            guard fileURL.pathExtension == "md" else { continue }
+            results.append(relativePath(for: fileURL))
+        }
+        return results.sorted()
     }
 
     func exists(path: String) async throws -> Bool {

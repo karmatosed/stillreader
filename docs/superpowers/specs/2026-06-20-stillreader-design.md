@@ -97,21 +97,41 @@ Root folder in iCloud Drive: `Stillreader/`
 ```
 Stillreader/
 ├── feeds/
-│   ├── smashing-magazine.md
-│   └── daring-fireball.md
+│   ├── s/
+│   │   └── smashing-magazine.md
+│   └── d/
+│       └── daring-fireball.md
 ├── links/
-│   ├── 2026-06-20-layout-grid-tricks.md
-│   └── 2026-06-18-swift-concurrency.md
+│   └── 2026/
+│       └── 06/
+│           └── 2026-06-20-layout-grid-tricks.md
 ├── state/
-│   ├── smashing-magazine.md
-│   └── daring-fireball.md
+│   ├── s/
+│   │   └── smashing-magazine.md
+│   └── d/
+│       └── daring-fireball.md
 └── .stillreader/
     └── meta.yaml
 ```
 
 The `.stillreader/` folder is app-managed and not intended for hand-editing. All other paths are human-readable.
 
-### `feeds/{slug}.md` — subscriptions
+### Scaling strategy
+
+For heavy use (500+ feeds, thousands of links, years of read history):
+
+| Data | Layout | Rule |
+|------|--------|------|
+| **Subscriptions** | `feeds/{shard}/{slug}.md` | Shard = first alphanumeric char of slug (lower case); non-alphanumeric → `_` |
+| **Read state** | `state/{shard}/{slug}.md` | Same shard as matching feed |
+| **Saved links** | `links/{yyyy}/{mm}/{date}-{slug}.md` | Date-sharded by save month |
+| **State pruning** | Per feed state file | Drop `read` entries older than **90 days** or beyond **500** most recent reads; **`read_later` never pruned** |
+
+**Backward compatibility:** External import accepts legacy flat paths (e.g. `feeds/my-feed.md`). New writes always use sharded paths. Slug is always the filename without extension.
+
+**Why not one folder per feed:** Only files are sharded one level deep (`feeds/s/…`), keeping directory listings small without deep nesting.
+
+### `feeds/{shard}/{slug}.md` — subscriptions
 
 One file per feed. Slug derived from title (e.g. `smashing-magazine`).
 
@@ -131,7 +151,7 @@ Notes on why I follow this feed.
 - **External add:** new file with at minimum `url` + `title` → app assigns `id` and slug on import
 - **External edit to existing:** ignored
 
-### `links/{date}-{slug}.md` — saved links
+### `links/{yyyy}/{mm}/{date}-{slug}.md` — saved links
 
 One file per saved link (share extension or in-app).
 
@@ -152,7 +172,7 @@ When read: set `read: true` and add `read_at` timestamp.
 - Share extension writes minimal file (URL + fetched title); main app enriches on sync
 - External rules: new files imported; edits to existing ignored
 
-### `state/{feed-slug}.md` — read/unread for RSS
+### `state/{shard}/{slug}.md` — read/unread for RSS
 
 One file per feed. Records relationship to cached articles — not the articles themselves.
 
@@ -221,7 +241,7 @@ Stable IDs ensure read state survives refreshes when titles or excerpts change.
 4. External edit to existing file → ignore (keep app version)
 5. Deleted file → remove from index (feed delete confirms removal of paired `state/` file)
 
-**Write path:** user action → update markdown → `StorageProvider.write()` → iCloud upload → update local index → optimistic UI update.
+**Write path:** user action → update markdown → apply `StatePruner` on state files → `StorageProvider.write()` → iCloud upload → update local index → optimistic UI update.
 
 **Multi-device:** iPhone and Mac share one iCloud container. Last write wins per file (acceptable v1). Re-merge on foreground when iCloud delivers updates.
 

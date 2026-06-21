@@ -30,7 +30,7 @@ struct Feed: Identifiable, Equatable, Sendable {
         self.created = created
         self.notes = notes
         self.slug = slug
-        self.filePath = filePath ?? "feeds/\(slug).md"
+        self.filePath = filePath ?? StoragePath.feed(slug)
     }
 
     init(from document: MarkdownDocument) throws {
@@ -59,9 +59,7 @@ struct Feed: Identifiable, Equatable, Sendable {
         }
 
         notes = document.body.trimmingCharacters(in: .whitespacesAndNewlines)
-        slug = document.path
-            .replacingOccurrences(of: "feeds/", with: "")
-            .replacingOccurrences(of: ".md", with: "")
+        slug = StoragePath.slugFromPath(document.path)
         filePath = document.path
     }
 }

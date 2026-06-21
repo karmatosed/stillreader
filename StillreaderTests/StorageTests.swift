@@ -13,17 +13,17 @@ final class StorageTests: XCTestCase {
         let feed = Feed(
             title: "Test",
             url: URL(string: "https://example.com/rss")!,
-            slug: "test",
-            filePath: "feeds/test.md"
+            slug: "test"
         )
+        let feedPath = StoragePath.feed("test")
         let content = try MarkdownParser.serialize(feed: feed, slug: "test")
-        try await storage.write(path: "feeds/test.md", content: content)
+        try await storage.write(path: feedPath, content: content)
 
-        let read = try await storage.read(path: "feeds/test.md")
+        let read = try await storage.read(path: feedPath)
         XCTAssertTrue(read.contains("https://example.com/rss"))
 
         let listed = try await storage.list(prefix: "feeds/")
-        XCTAssertEqual(listed, ["feeds/test.md"])
+        XCTAssertEqual(listed, [feedPath])
     }
 
     func testEnsureLayoutCreatesDirectories() async throws {
@@ -49,13 +49,27 @@ final class StorageTests: XCTestCase {
 
         let storage = LocalStorageAdapter(rootURL: tmp)
         try await storage.ensureLayout()
-        try await storage.write(path: "feeds/gone.md", content: "test")
-        let existsBeforeDelete = try await storage.exists(path: "feeds/gone.md")
+        try await storage.write(path: "feeds/t/gone.md", content: "test")
+        let existsBeforeDelete = try await storage.exists(path: "feeds/t/gone.md")
         XCTAssertTrue(existsBeforeDelete)
 
-        try await storage.delete(path: "feeds/gone.md")
-        let existsAfterDelete = try await storage.exists(path: "feeds/gone.md")
+        try await storage.delete(path: "feeds/t/gone.md")
+        let existsAfterDelete = try await storage.exists(path: "feeds/t/gone.md")
         XCTAssertFalse(existsAfterDelete)
+    }
+
+    func testListFindsNestedMarkdownFiles() async throws {
+        let tmp = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: tmp) }
+
+        let storage = LocalStorageAdapter(rootURL: tmp)
+        try await storage.ensureLayout()
+        try await storage.write(path: "feeds/a/alpha.md", content: "a")
+        try await storage.write(path: "feeds/z/zulu.md", content: "z")
+
+        let listed = try await storage.list(prefix: "feeds/")
+        XCTAssertEqual(listed, ["feeds/a/alpha.md", "feeds/z/zulu.md"])
     }
 
     func testReadMissingFileThrows() async throws {

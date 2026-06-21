@@ -25,7 +25,7 @@ final class MarkdownParserTests: XCTestCase {
 
     func testParseLinkRoundTrip() throws {
         let fixture = try loadFixture("sample-link.md")
-        let doc = try MarkdownParser.parse(content: fixture, path: "links/2026-06-20-test-article.md")
+        let doc = try MarkdownParser.parse(content: fixture, path: "links/2026/06/2026-06-20-test-article.md")
         let link = try SavedLink(from: doc)
 
         XCTAssertEqual(link.id, "link_test")
@@ -45,7 +45,7 @@ final class MarkdownParserTests: XCTestCase {
 
     func testParseFeedStateRoundTrip() throws {
         let fixture = try loadFixture("sample-state.md")
-        let doc = try MarkdownParser.parse(content: fixture, path: "state/test-feed.md")
+        let doc = try MarkdownParser.parse(content: fixture, path: "state/s/test-feed.md")
         let state = try FeedState(from: doc)
 
         XCTAssertEqual(state.feedID, "feed_test")

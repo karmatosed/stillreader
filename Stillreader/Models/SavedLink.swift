@@ -33,7 +33,13 @@ struct SavedLink: Identifiable, Equatable, Sendable {
         self.readAt = readAt
         self.notes = notes
         self.slug = slug
-        self.filePath = filePath ?? "links/\(slug).md"
+        if let filePath {
+            self.filePath = filePath
+        } else {
+            let datePrefix = String(MarkdownDates.format(saved).prefix(10))
+            let filename = StoragePath.linkFilename(datePrefix: datePrefix, slug: slug)
+            self.filePath = StoragePath.link(filename: filename, saved: saved)
+        }
     }
 
     init(from document: MarkdownDocument) throws {
@@ -63,9 +69,7 @@ struct SavedLink: Identifiable, Equatable, Sendable {
         }
 
         notes = document.body.trimmingCharacters(in: .whitespacesAndNewlines)
-        slug = document.path
-            .replacingOccurrences(of: "links/", with: "")
-            .replacingOccurrences(of: ".md", with: "")
+        slug = StoragePath.slugFromPath(document.path)
         filePath = document.path
     }
 }
