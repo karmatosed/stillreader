@@ -18,7 +18,7 @@ settings:
   base:
     SWIFT_VERSION: "5.9"
     MARKETING_VERSION: "1.0.0"
-    CURRENT_PROJECT_VERSION: "2"
+    CURRENT_PROJECT_VERSION: "4"
     DEVELOPMENT_TEAM: K2967B5G85
   configs:
     Debug:
@@ -32,8 +32,13 @@ targets:
     platform: iOS
     sources:
       - path: Stillreader
+        excludes:
+          - Resources
+          - Assets.xcassets
+          - Info.plist
       - path: Stillreader/Resources
         buildPhase: resources
+      - path: Stillreader/Assets.xcassets
     dependencies:
       - package: GRDB
         product: GRDB
@@ -48,12 +53,14 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.stillreader.app
         GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_FILE: Stillreader/Info.plist
         INFOPLIST_KEY_CFBundleDisplayName: Stillreader
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.news
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        INFOPLIST_KEY_CFBundleIconName: AppIcon
         ENABLE_PREVIEWS: YES
         CODE_SIGN_ENTITLEMENTS: Stillreader.entitlements
       configs:
