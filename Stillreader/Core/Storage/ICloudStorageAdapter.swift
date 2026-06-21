@@ -2,12 +2,16 @@ import Foundation
 
 final class ICloudStorageAdapter: StorageProvider, @unchecked Sendable {
     private let localAdapter: LocalStorageAdapter
-    private(set) var isCloudAvailable: Bool
+    private(set) var storageLocation: StorageLocation
 
     init(fileManager: FileManager = .default) {
-        let resolved = SharedStorageRoot.resolve(fileManager: fileManager)
-        localAdapter = LocalStorageAdapter(rootURL: resolved.url, fileManager: fileManager)
-        isCloudAvailable = resolved.usesICloud
+        let resolved = SharedStorageRoot.makeStorage(fileManager: fileManager)
+        localAdapter = resolved.storage
+        storageLocation = resolved.location
+    }
+
+    var isCloudAvailable: Bool {
+        storageLocation == .iCloudDrive
     }
 
     func ensureLayout() async throws {

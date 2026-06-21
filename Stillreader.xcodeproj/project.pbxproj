@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		08043991F18F1A3FB94A1848 /* InboxItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB37754A5E5873154B2299C /* InboxItem.swift */; };
+		098DDBC8C523D1CC677E9C89 /* AppGroupReconciler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13478C830AD367D30A8FB571 /* AppGroupReconciler.swift */; };
 		0AE1743F8120F3E6C2C05169 /* Feed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42B8D4D09FBDE9DFECD4CF43 /* Feed.swift */; };
 		0F4847AECE8F21D8408C6783 /* InboxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8426FEFF22D41E678A50689D /* InboxView.swift */; };
 		0FE418EEC163D57A087D3EB7 /* CachedArticle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AE19E7501B6DCEE5F527DAB /* CachedArticle.swift */; };
@@ -62,6 +63,7 @@
 		BE1DC66B6AC0F4F8F11D13F8 /* ReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A842D5A7A6D094F01F391800 /* ReaderView.swift */; };
 		BEDF8713C1AA1843897DFC86 /* StoragePath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097582FFE338CA2DA4F7D86B /* StoragePath.swift */; };
 		C03FC45E7A9E54A0D3542EE3 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2862C7C887E3BEB717F066DE /* SearchView.swift */; };
+		C1FEFAD790EE965FC577CA66 /* AppGroupReconciler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13478C830AD367D30A8FB571 /* AppGroupReconciler.swift */; };
 		C9F5D5A15D93EA55D6BBEA09 /* FeedDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB98519A2C8CBA27757215F1 /* FeedDetailView.swift */; };
 		CC26153140F3504769D9A204 /* AddFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA64629105546E09DB52F99B /* AddFeedView.swift */; };
 		CC659544BAF84518770C9C62 /* FeedState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB35EFF06D9E6C576FD9AB53 /* FeedState.swift */; };
@@ -123,6 +125,7 @@
 		06F955268A2B80E4200E028A /* StillreaderTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = StillreaderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		097582FFE338CA2DA4F7D86B /* StoragePath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoragePath.swift; sourceTree = "<group>"; };
 		0D90C6973EACB7570A0CD5C8 /* AppMetaStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMetaStore.swift; sourceTree = "<group>"; };
+		13478C830AD367D30A8FB571 /* AppGroupReconciler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroupReconciler.swift; sourceTree = "<group>"; };
 		179822079B6942BC3BB9DC07 /* StorageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageProvider.swift; sourceTree = "<group>"; };
 		184099DB5D1CBDD0456ECBBE /* sample-state.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "sample-state.md"; sourceTree = "<group>"; };
 		1E677450DAD03760BF81AEAA /* MarkdownParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownParser.swift; sourceTree = "<group>"; };
@@ -327,6 +330,7 @@
 		8EBA5A90ADC92448762E607E /* Storage */ = {
 			isa = PBXGroup;
 			children = (
+				13478C830AD367D30A8FB571 /* AppGroupReconciler.swift */,
 				8CA9F975A54D2F982E0B5B7C /* GitHubStorageAdapter.swift */,
 				6DA61F4FA9D28E19AE4E8A95 /* ICloudStorageAdapter.swift */,
 				A33DB13404BCDF28F2EF007E /* LocalStorageAdapter.swift */,
@@ -537,6 +541,15 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					3A34AF9ABAFC2BCA3479B677 = {
+						ProvisioningStyle = Automatic;
+					};
+					90AB44A8E6DB7D0B62A9E642 = {
+						ProvisioningStyle = Automatic;
+					};
+					CF13C86F4CDE913C5355C15F = {
+						ProvisioningStyle = Automatic;
+					};
 				};
 			};
 			buildConfigurationList = 4A5BAB4C5EE01B8C6ABD00F0 /* Build configuration list for PBXProject "Stillreader" */;
@@ -582,6 +595,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				098DDBC8C523D1CC677E9C89 /* AppGroupReconciler.swift in Sources */,
 				397F85B2870721DA11310000 /* AppMetaStore.swift in Sources */,
 				0FE418EEC163D57A087D3EB7 /* CachedArticle.swift in Sources */,
 				B0FF91A648BBA0F97D72D954 /* ContentHasher.swift in Sources */,
@@ -610,6 +624,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CC26153140F3504769D9A204 /* AddFeedView.swift in Sources */,
+				C1FEFAD790EE965FC577CA66 /* AppGroupReconciler.swift in Sources */,
 				41EAE31296E660C18F627576 /* AppMetaStore.swift in Sources */,
 				609AADD8FFC814581068A3D9 /* AppState.swift in Sources */,
 				9B758F0B21A19A1CE18D18F4 /* ArticleCache.swift in Sources */,
@@ -822,8 +837,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGNING_ALLOWED = NO;
-				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -860,6 +874,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGNING_ALLOWED[sdk=macosx*]" = NO;
 				CODE_SIGN_ENTITLEMENTS = Stillreader.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				ENABLE_PREVIEWS = YES;
@@ -884,7 +899,6 @@
 		B290F12C30CD142C5AB39563 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGNING_ALLOWED = NO;
 				CODE_SIGN_ENTITLEMENTS = StillreaderShareExtension/ShareExtension.entitlements;
 				INFOPLIST_FILE = StillreaderShareExtension/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

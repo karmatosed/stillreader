@@ -42,7 +42,11 @@ final class ShareViewController: UIViewController {
             }
 
             let title = await fetchTitle(for: url) ?? url.host ?? "Saved link"
-            let (storage, _) = SharedStorageRoot.makeStorage()
+            guard let groupRoot = SharedStorageRoot.appGroupRoot() else {
+                finish(message: "App Group unavailable — set Development Team in Xcode")
+                return
+            }
+            let storage = LocalStorageAdapter(rootURL: groupRoot)
             _ = try await LinkSaver.save(url: url, title: title, storage: storage)
             finish(message: "Saved to Stillreader")
         } catch {

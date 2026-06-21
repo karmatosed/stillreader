@@ -22,8 +22,7 @@ settings:
     CURRENT_PROJECT_VERSION: "1"
   configs:
     Debug:
-      CODE_SIGNING_ALLOWED: NO
-      CODE_SIGN_ENTITLEMENTS: ""
+      CODE_SIGN_STYLE: Automatic
     Release:
       CODE_SIGN_STYLE: Automatic
 
@@ -51,9 +50,10 @@ targets:
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.news
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         ENABLE_PREVIEWS: YES
+        CODE_SIGN_ENTITLEMENTS: Stillreader.entitlements
       configs:
         Debug:
-          CODE_SIGN_ENTITLEMENTS: ""
+          CODE_SIGNING_ALLOWED[sdk=macosx*]: NO
         Release:
           CODE_SIGN_ENTITLEMENTS: Stillreader.entitlements
 
@@ -93,10 +93,6 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.stillreader.app.share
         CODE_SIGN_ENTITLEMENTS: StillreaderShareExtension/ShareExtension.entitlements
         SKIP_INSTALL: YES
-      configs:
-        Debug:
-          CODE_SIGNING_ALLOWED: NO
-          CODE_SIGN_ENTITLEMENTS: ""
 
 schemes:
   Stillreader:

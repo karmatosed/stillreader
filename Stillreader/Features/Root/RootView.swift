@@ -30,6 +30,8 @@ private struct IOSRootView: View {
                 .tabItem { Label("Links", systemImage: "link") }
             SearchView()
                 .tabItem { Label("Search", systemImage: "magnifyingglass") }
+            SettingsView()
+                .tabItem { Label("Settings", systemImage: "gear") }
         }
     }
 }

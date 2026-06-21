@@ -17,6 +17,7 @@ final class SyncService {
     func sync() async throws {
         syncIssues = []
         try await storage.ensureLayout()
+        try await AppGroupReconciler.importPending(into: storage)
         try await reloadFeeds()
         try await reloadLinks()
         try await reloadStates()

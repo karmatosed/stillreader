@@ -21,6 +21,7 @@ final class AppState: ObservableObject {
     @Published var lastRefresh: Date?
     @Published var feedErrors: [String: String] = [:]
     @Published var iCloudAvailable = false
+    @Published var storageLocation: StorageLocation = .localFallback
     @Published var inboxItems: [InboxItem] = []
 
     let storage: StorageProvider
@@ -37,6 +38,7 @@ final class AppState: ObservableObject {
         let resolvedStorage = storage ?? ICloudStorageAdapter()
         if let cloud = resolvedStorage as? ICloudStorageAdapter {
             iCloudAvailable = cloud.isCloudAvailable
+            storageLocation = cloud.storageLocation
         }
 
         self.storage = resolvedStorage
@@ -69,6 +71,7 @@ final class AppState: ObservableObject {
 
     func bootstrap() async {
         do {
+            try await AppGroupReconciler.importPending(into: storage)
             try await syncService.sync()
             try await metaStore.load()
             applySyncSnapshot()

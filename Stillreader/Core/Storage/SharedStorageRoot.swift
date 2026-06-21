@@ -1,29 +1,46 @@
 import Foundation
 
+enum StorageLocation: Equatable, Sendable {
+    case iCloudDrive
+    case appGroup
+    case localFallback
+}
+
 enum SharedStorageRoot {
     static let appGroupID = "group.com.stillreader.app"
     static let iCloudContainerID = "iCloud.com.stillreader.app"
 
-    static func resolve(fileManager: FileManager = .default) -> (url: URL, usesICloud: Bool) {
+    /// Primary storage — iCloud Documents when available so Mac and iPhone share data.
+    static func resolvePrimary(fileManager: FileManager = .default) -> (url: URL, location: StorageLocation) {
+        if let container = fileManager.url(forUbiquityContainerIdentifier: iCloudContainerID) {
+            let root = container.appendingPathComponent("Documents/Stillreader", isDirectory: true)
+            return (root, .iCloudDrive)
+        }
+
         #if os(iOS)
         if let group = fileManager.containerURL(forSecurityApplicationGroupIdentifier: appGroupID) {
             let root = group.appendingPathComponent("Stillreader", isDirectory: true)
-            let hasICloud = fileManager.url(forUbiquityContainerIdentifier: iCloudContainerID) != nil
-            return (root, hasICloud)
+            return (root, .appGroup)
         }
         #endif
 
-        if let container = fileManager.url(forUbiquityContainerIdentifier: iCloudContainerID) {
-            let root = container.appendingPathComponent("Documents/Stillreader", isDirectory: true)
-            return (root, true)
-        }
-
         let appSupport = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        return (appSupport.appendingPathComponent("Stillreader", isDirectory: true), false)
+        return (appSupport.appendingPathComponent("Stillreader", isDirectory: true), .localFallback)
     }
 
-    static func makeStorage(fileManager: FileManager = .default) -> (storage: LocalStorageAdapter, usesICloud: Bool) {
-        let resolved = resolve(fileManager: fileManager)
-        return (LocalStorageAdapter(rootURL: resolved.url, fileManager: fileManager), resolved.usesICloud)
+    /// Share extension always writes here; main app imports into primary on sync.
+    static func appGroupRoot(fileManager: FileManager = .default) -> URL? {
+        #if os(iOS)
+        return fileManager
+            .containerURL(forSecurityApplicationGroupIdentifier: appGroupID)?
+            .appendingPathComponent("Stillreader", isDirectory: true)
+        #else
+        return nil
+        #endif
+    }
+
+    static func makeStorage(fileManager: FileManager = .default) -> (storage: LocalStorageAdapter, location: StorageLocation) {
+        let resolved = resolvePrimary(fileManager: fileManager)
+        return (LocalStorageAdapter(rootURL: resolved.url, fileManager: fileManager), resolved.location)
     }
 }

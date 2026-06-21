@@ -7,9 +7,12 @@ struct SettingsView: View {
     var body: some View {
         Form {
             Section("Storage") {
-                LabeledContent("iCloud") {
-                    Text(appState.iCloudAvailable ? "Connected" : "Local fallback")
+                LabeledContent("Location") {
+                    Text(storageLabel)
                         .foregroundStyle(appState.iCloudAvailable ? .green : .orange)
+                }
+                LabeledContent("iCloud sync") {
+                    Text(appState.iCloudAvailable ? "On" : "Off")
                 }
                 LabeledContent("Schema version") { Text("1") }
             }
@@ -30,5 +33,13 @@ struct SettingsView: View {
             }
         }
         .navigationTitle("Settings")
+    }
+
+    private var storageLabel: String {
+        switch appState.storageLocation {
+        case .iCloudDrive: return "iCloud Drive"
+        case .appGroup: return "App Group (this device)"
+        case .localFallback: return "Local only"
+        }
     }
 }
