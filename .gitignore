@@ -1,0 +1,15 @@
+# Xcode
+DerivedData/
+*.xcuserstate
+xcuserdata/
+
+# macOS
+.DS_Store
+
+# Swift Package Manager
+.build/
+Packages/
+Package.resolved
+
+# Generated — run `xcodegen generate` after editing project.yml
+# Stillreader.xcodeproj is committed for convenience; regenerate if project.yml changes
