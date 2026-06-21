@@ -58,6 +58,38 @@ final class MergeEngineTests: XCTestCase {
         XCTAssertEqual(later[0].itemID, "gone")
     }
 
+    func testUnreadExcludesReadLaterItems() {
+        let state = FeedState(
+            feedID: feed.id,
+            items: [
+                StateItem(id: "a1", status: .readLater, taggedAt: Date()),
+            ],
+            slug: feed.slug
+        )
+
+        let unread = MergeEngine.unreadArticles(articles: articles, feed: feed, state: state)
+        XCTAssertEqual(unread.map(\.id), ["a2"])
+    }
+
+    func testInboxSectionsIncludeReadLater() {
+        let state = FeedState(
+            feedID: feed.id,
+            items: [
+                StateItem(id: "a1", status: .readLater, taggedAt: Date(), tags: ["todo"]),
+            ],
+            slug: feed.slug
+        )
+        let sections = MergeEngine.inboxSections(
+            groupedByFeed: false,
+            feeds: [feed],
+            articles: articles,
+            states: [feed.id: state],
+            links: []
+        )
+        XCTAssertTrue(sections.contains { $0.id == "read-later" })
+        XCTAssertEqual(sections.first { $0.id == "read-later" }?.items.count, 1)
+    }
+
     func testInboxIncludesUnreadArticlesAndLinks() {
         let link = SavedLink(
             id: "link_1",

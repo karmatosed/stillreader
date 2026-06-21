@@ -2,50 +2,122 @@ import SwiftUI
 
 struct SearchView: View {
     @EnvironmentObject private var appState: AppState
+    @Environment(\.colorScheme) private var colorScheme
+
+    @Binding private var selectedDetail: InboxDetailSelection?
+    private let usesSplitNavigation: Bool
 
     @State private var query = ""
     @State private var selectedTag: String?
     @State private var filterUnreadOnly = false
     @State private var results: [CachedArticle] = []
 
+    private var searchKey: String {
+        "\(query)|\(filterUnreadOnly)|\(selectedTag ?? "")"
+    }
+
+    init() {
+        _selectedDetail = .constant(nil)
+        usesSplitNavigation = false
+    }
+
+    init(selectedDetail: Binding<InboxDetailSelection?>) {
+        _selectedDetail = selectedDetail
+        usesSplitNavigation = true
+    }
+
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 0) {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack {
-                        ForEach(appState.allTags(), id: \.self) { tag in
-                            Button(tag) {
-                                selectedTag = selectedTag == tag ? nil : tag
-                                search()
-                            }
-                            .buttonStyle(.bordered)
-                            .tint(selectedTag == tag ? .accentColor : .gray)
-                        }
-                    }
-                    .padding(.horizontal)
-                }
-
-                Toggle("Unread only", isOn: $filterUnreadOnly)
-                    .padding()
-                    .onChange(of: filterUnreadOnly) { _, _ in search() }
-
-                List(filteredResults) { article in
-                    if let feed = appState.feeds.first(where: { $0.id == article.feedID }) {
-                        NavigationLink {
-                            ReaderView(article: article, feed: feed)
-                        } label: {
-                            VStack(alignment: .leading) {
-                                Text(article.title)
-                                Text(feed.title).font(.caption).foregroundStyle(.secondary)
-                            }
-                        }
-                    }
+        Group {
+            if usesSplitNavigation {
+                searchContent
+            } else {
+                NavigationStack {
+                    searchContent
                 }
             }
-            .navigationTitle("Search")
-            .searchable(text: $query)
-            .onChange(of: query) { _, _ in search() }
-            .onAppear { search() }
+        }
+    }
+
+    private var searchContent: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Image(systemName: "magnifyingglass")
+                    .foregroundStyle(StillPalette.secondaryText(colorScheme))
+                TextField("Search articles", text: $query)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                    .foregroundStyle(StillPalette.primaryText(colorScheme))
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 10)
+            .background(StillPalette.elevatedBackground(colorScheme))
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack {
+                    ForEach(appState.allTags(), id: \.self) { tag in
+                        Button(tag) {
+                            selectedTag = selectedTag == tag ? nil : tag
+                        }
+                        .buttonStyle(CalmChipButtonStyle(isSelected: selectedTag == tag))
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 8)
+            }
+
+            Toggle("Unread only", isOn: $filterUnreadOnly)
+                .padding(.horizontal)
+                .tint(StillPalette.accent(colorScheme))
+
+            List(filteredResults) { article in
+                if let feed = appState.feeds.first(where: { $0.id == article.feedID }) {
+                    resultRow(article: article, feed: feed)
+                }
+            }
+            .scrollContentBackground(.hidden)
+        }
+        .background(StillPalette.screenBackground(colorScheme))
+        .navigationTitle("Search")
+        .navigationBarTitleDisplayMode(.inline)
+        .onAppear { search() }
+        .task(id: searchKey) {
+            guard !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                results = []
+                return
+            }
+            search()
+        }
+    }
+
+    @ViewBuilder
+    private func resultRow(article: CachedArticle, feed: Feed) -> some View {
+        let detail = InboxDetailSelection.article(articleID: article.id, feedID: feed.id)
+        let label = VStack(alignment: .leading) {
+            Text(article.title)
+                .foregroundStyle(StillPalette.primaryText(colorScheme))
+            Text(feed.title)
+                .font(.caption)
+                .foregroundStyle(StillPalette.secondaryText(colorScheme))
+        }
+
+        if usesSplitNavigation {
+            Button {
+                selectedDetail = detail
+            } label: {
+                label
+            }
+            .buttonStyle(.plain)
+            .listRowBackground(
+                selectedDetail == detail
+                    ? StillPalette.selectedChipFill(colorScheme).opacity(0.35)
+                    : Color.clear
+            )
+        } else {
+            NavigationLink {
+                ReaderView(article: article, feed: feed)
+            } label: {
+                label
+            }
         }
     }
 

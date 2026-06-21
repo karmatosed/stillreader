@@ -1,6 +1,10 @@
-# XcodeGen
+# Stillreader
 
-Generate the Xcode project after cloning:
+A calm, monochrome RSS reader for iOS. Subscriptions and read state live in Markdown on iCloud Drive; articles are cached locally with on-demand refresh.
+
+**v1.0** — iPhone + iPad (no Mac app, no GitHub sync yet).
+
+## Setup
 
 ```bash
 brew install xcodegen   # once
@@ -8,17 +12,40 @@ xcodegen generate
 open Stillreader.xcodeproj
 ```
 
-Or create the project in Xcode (File → New → Multiplatform → App) and add the `Stillreader/` sources.
+Set your **Development Team** in Xcode for device builds, iCloud, and the share extension.
 
-## Build
+## Build & test
 
 ```bash
 xcodegen generate
-xcodebuild -scheme Stillreader -destination 'platform=macOS' build
-xcodebuild test -scheme Stillreader -destination 'platform=macOS'
+
+# Simulator
+xcodebuild -scheme Stillreader \
+  -destination 'platform=iOS Simulator,name=iPhone 17' \
+  build
+
+xcodebuild test -scheme Stillreader \
+  -destination 'platform=iOS Simulator,name=iPhone 17'
+
+# Release (device)
+xcodebuild -scheme Stillreader \
+  -configuration Release \
+  -destination 'generic/platform=iOS' \
+  build
 ```
 
-Open `Stillreader.xcodeproj` in Xcode to run on iOS simulator or device. Set your development team for Release builds and iCloud.
+Archive for TestFlight: **Product → Archive** in Xcode (Release, valid signing).
+
+## v1 features
+
+- RSS inbox with read / read-later / tag swipe actions
+- Group inbox by feed; read-later section
+- In-app reader (excerpt + full article WebView)
+- OPML import (file picker + paste)
+- Saved links + share extension
+- iCloud Drive storage with local fallback
+- iPad three-column layout (sidebar · list · detail)
+- Dark-first calm monochrome UI
 
 ## Architecture
 

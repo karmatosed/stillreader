@@ -1,6 +1,6 @@
 import Foundation
 
-@MainActor
+// Remove @MainActor - file operations run off the main thread via LocalStorageAdapter.
 final class SyncService {
     private let storage: StorageProvider
     private var lastWrittenHashes: [String: String] = [:]
@@ -107,10 +107,12 @@ final class SyncService {
                     )
                     let normalized = try MarkdownParser.serialize(feed: feed, slug: feed.slug)
                     try await write(path: path, content: normalized)
+                    lastWrittenHashes[path] = ContentHasher.hash(normalized)
+                } else {
+                    lastWrittenHashes[path] = hash
                 }
 
                 loaded.append(feed)
-                lastWrittenHashes[path] = hash
             } catch {
                 syncIssues.append("Could not parse feed \(path): \(error.localizedDescription)")
             }

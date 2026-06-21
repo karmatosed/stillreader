@@ -2,45 +2,77 @@ import SwiftUI
 
 struct ReaderView: View {
     @EnvironmentObject private var appState: AppState
+    @Environment(\.openURL) private var openURL
+    @Environment(\.colorScheme) private var colorScheme
     let article: CachedArticle
     let feed: Feed
 
-    @State private var showWebView = false
+    @State private var showFullArticle = false
+    @State private var showingTagSheet = false
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                Text(article.title).font(.title2.bold())
-                Text(feed.title).font(.subheadline).foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 20) {
+                Text(article.title)
+                    .font(.title2.weight(.semibold))
+                    .foregroundStyle(StillPalette.primaryText(colorScheme))
+                Text(feed.title)
+                    .font(.subheadline)
+                    .foregroundStyle(StillPalette.secondaryText(colorScheme))
                 Text(article.published.formatted(date: .abbreviated, time: .shortened))
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(StillPalette.tertiaryText(colorScheme))
 
-                if !article.excerpt.isEmpty {
-                    Text(article.excerpt)
+                if showFullArticle {
+                    ArticleWebView(url: article.url)
+                        .frame(minHeight: 420)
+                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                } else if !article.excerpt.isEmpty {
+                    RichTextView(content: article.excerpt)
                 }
 
-                if showWebView {
-                    ArticleWebView(url: article.url)
-                        .frame(minHeight: 400)
-                } else {
-                    Button("Read full article") { showWebView = true }
+                HStack(spacing: 12) {
+                    if !showFullArticle {
+                        Button("Read full article") {
+                            showFullArticle = true
+                        }
+                        .buttonStyle(.calmBordered)
+                    }
+                    Button("Open in Safari") {
+                        openURL(article.url)
+                    }
+                    .buttonStyle(.calmBordered)
                 }
             }
             .padding()
         }
+        .background(StillPalette.screenBackground(colorScheme))
         .navigationTitle("Reader")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
                 Button("Read") {
                     Task { try? await appState.markRead(feed: feed, articleID: article.id) }
                 }
+                .foregroundStyle(StillPalette.primaryText(colorScheme))
                 Button("Later") {
                     Task { try? await appState.markReadLater(feed: feed, articleID: article.id) }
                 }
-                Link(destination: article.url) {
-                    Label("Safari", systemImage: "safari")
+                .foregroundStyle(StillPalette.primaryText(colorScheme))
+                Button("Tag") {
+                    showingTagSheet = true
                 }
+                .foregroundStyle(StillPalette.primaryText(colorScheme))
+            }
+        }
+        .sheet(isPresented: $showingTagSheet) {
+            TagArticleSheet(
+                feed: feed,
+                articleID: article.id,
+                articleTitle: article.title,
+                initialTags: appState.tags(for: feed, articleID: article.id)
+            ) { tags in
+                try? await appState.setArticleTags(feed: feed, articleID: article.id, tags: tags)
             }
         }
     }
@@ -48,30 +80,37 @@ struct ReaderView: View {
 
 struct LinkReaderView: View {
     @EnvironmentObject private var appState: AppState
+    @Environment(\.openURL) private var openURL
+    @Environment(\.colorScheme) private var colorScheme
     let link: SavedLink
-
-    @State private var showWebView = false
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                Text(link.title).font(.title2.bold())
-                Text(link.url.absoluteString).font(.caption).foregroundStyle(.secondary)
-                if !link.notes.isEmpty { Text(link.notes) }
-                if showWebView {
-                    ArticleWebView(url: link.url)
-                        .frame(minHeight: 400)
-                } else {
-                    Button("Read full article") { showWebView = true }
+            VStack(alignment: .leading, spacing: 20) {
+                Text(link.title)
+                    .font(.title2.weight(.semibold))
+                    .foregroundStyle(StillPalette.primaryText(colorScheme))
+                Text(link.url.absoluteString)
+                    .font(.caption)
+                    .foregroundStyle(StillPalette.secondaryText(colorScheme))
+                if !link.notes.isEmpty {
+                    RichTextView(content: link.notes)
                 }
+                Button("Open in Safari") {
+                    openURL(link.url)
+                }
+                .buttonStyle(.calmBordered)
             }
             .padding()
         }
+        .background(StillPalette.screenBackground(colorScheme))
         .navigationTitle("Saved link")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             Button("Mark read") {
                 Task { try? await appState.markLinkRead(link) }
             }
+            .foregroundStyle(StillPalette.primaryText(colorScheme))
         }
     }
 }

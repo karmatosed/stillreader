@@ -50,6 +50,17 @@
                ReferencedContainer = "container:Stillreader.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "E9498F24B3412548A77DCC6C"
+               BuildableName = "StillreaderUITests.xctest"
+               BlueprintName = "StillreaderUITests"
+               ReferencedContainer = "container:Stillreader.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <CommandLineArguments>
       </CommandLineArguments>
@@ -74,6 +85,8 @@
             ReferencedContainer = "container:Stillreader.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <CommandLineArguments>
+      </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

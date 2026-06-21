@@ -16,7 +16,6 @@ struct FeedRefreshMeta: Equatable, Sendable {
     var error: String?
 }
 
-@MainActor
 final class AppMetaStore {
     private let storage: StorageProvider
     private(set) var meta = AppMeta.empty

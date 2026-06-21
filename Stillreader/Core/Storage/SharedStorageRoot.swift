@@ -10,20 +10,8 @@ enum SharedStorageRoot {
     static let appGroupID = "group.com.stillreader.app"
     static let iCloudContainerID = "iCloud.com.stillreader.app"
 
-    /// Primary storage — iCloud Documents when available so Mac and iPhone share data.
+    /// Primary storage for the main app — app group is for the share extension only.
     static func resolvePrimary(fileManager: FileManager = .default) -> (url: URL, location: StorageLocation) {
-        if let container = fileManager.url(forUbiquityContainerIdentifier: iCloudContainerID) {
-            let root = container.appendingPathComponent("Documents/Stillreader", isDirectory: true)
-            return (root, .iCloudDrive)
-        }
-
-        #if os(iOS)
-        if let group = fileManager.containerURL(forSecurityApplicationGroupIdentifier: appGroupID) {
-            let root = group.appendingPathComponent("Stillreader", isDirectory: true)
-            return (root, .appGroup)
-        }
-        #endif
-
         let appSupport = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         return (appSupport.appendingPathComponent("Stillreader", isDirectory: true), .localFallback)
     }

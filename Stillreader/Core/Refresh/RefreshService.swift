@@ -1,6 +1,5 @@
 import Foundation
 
-@MainActor
 final class RefreshService {
     private let fetcher: FeedFetcher
     private let cache: ArticleCache
@@ -21,13 +20,41 @@ final class RefreshService {
     }
 
     func refreshAll(feeds: [Feed]) async {
-        for feed in feeds {
-            do {
-                _ = try await refresh(feed: feed)
-            } catch {
-                try? await metaStore.recordError(feedID: feed.id, error: error.localizedDescription)
+        struct Outcome {
+            let feedID: String
+            let articles: [CachedArticle]?
+            let error: String?
+        }
+
+        let outcomes = await withTaskGroup(of: Outcome.self, returning: [Outcome].self) { group in
+            for feed in feeds {
+                group.addTask {
+                    do {
+                        let data = try await self.fetcher.fetch(url: feed.url)
+                        let parsed = try FeedKitParser.parse(data: data, feedID: feed.id)
+                        return Outcome(feedID: feed.id, articles: parsed, error: nil)
+                    } catch {
+                        return Outcome(feedID: feed.id, articles: nil, error: error.localizedDescription)
+                    }
+                }
+            }
+
+            var collected: [Outcome] = []
+            for await outcome in group {
+                collected.append(outcome)
+            }
+            return collected
+        }
+
+        for outcome in outcomes {
+            if let articles = outcome.articles {
+                try? cache.upsert(articles)
+                try? await metaStore.recordSuccess(feedID: outcome.feedID, count: articles.count)
+            } else if let error = outcome.error {
+                try? await metaStore.recordError(feedID: outcome.feedID, error: error)
             }
         }
+
         let cutoff = Date().addingTimeInterval(-30 * 24 * 3600)
         try? cache.prune(olderThan: cutoff)
     }

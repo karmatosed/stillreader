@@ -6,11 +6,13 @@ final class ShareViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = UIColor(red: 0.07, green: 0.07, blue: 0.08, alpha: 1)
 
         statusLabel.text = "Saving to Stillreader…"
         statusLabel.textAlignment = .center
         statusLabel.numberOfLines = 0
+        statusLabel.textColor = UIColor(white: 0.94, alpha: 1)
+        statusLabel.font = .preferredFont(forTextStyle: .body)
         statusLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(statusLabel)
 
@@ -48,7 +50,7 @@ final class ShareViewController: UIViewController {
             }
             let storage = LocalStorageAdapter(rootURL: groupRoot)
             _ = try await LinkSaver.save(url: url, title: title, storage: storage)
-            finish(message: "Saved to Stillreader")
+            finish(message: "Saved — open Stillreader to sync")
         } catch {
             finish(message: error.localizedDescription)
         }

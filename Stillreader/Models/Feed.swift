@@ -1,6 +1,6 @@
 import Foundation
 
-struct Feed: Identifiable, Equatable, Sendable {
+struct Feed: Identifiable, Equatable, Hashable, Sendable {
     let id: String
     var title: String
     var url: URL

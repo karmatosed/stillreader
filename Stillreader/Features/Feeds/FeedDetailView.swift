@@ -27,32 +27,45 @@ struct FeedDetailView: View {
                 TextEditor(text: $draft.notes)
                     .frame(minHeight: 80)
                 Button("Save") {
-                    Task {
-                        try? await appState.updateFeed(draft)
-                    }
+                    Task { try? await appState.updateFeed(draft) }
                 }
             }
 
             Section("Articles") {
-                ForEach(feedArticles) { article in
-                    NavigationLink {
-                        ReaderView(article: article, feed: feed)
-                    } label: {
-                        Text(article.title)
+                if feedArticles.isEmpty {
+                    Text("No articles yet. Tap Refresh to fetch this feed.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                } else {
+                    ForEach(feedArticles) { article in
+                        NavigationLink {
+                            ReaderView(article: article, feed: feed)
+                        } label: {
+                            Text(article.title)
+                        }
                     }
                 }
             }
         }
         .navigationTitle(feed.title)
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
-                Button("Refresh") {
+                Button {
                     Task {
                         isRefreshing = true
-                        await appState.refreshAll()
+                        await appState.refreshFeed(feed)
                         isRefreshing = false
                     }
+                } label: {
+                    if isRefreshing || appState.refreshingFeedID == feed.id {
+                        ProgressView()
+                    } else {
+                        Text("Refresh")
+                    }
                 }
+                .disabled(isRefreshing || appState.refreshingFeedID == feed.id)
+
                 Button("Mark all read") {
                     Task {
                         try? await appState.markAllRead(

@@ -25,6 +25,7 @@ private final class RSSParserDelegate: NSObject, XMLParserDelegate {
     private var currentLink = ""
     private var currentGUID = ""
     private var currentDescription = ""
+    private var currentEncoded = ""
     private var currentPubDate = ""
     private var currentElement = ""
 
@@ -55,7 +56,10 @@ private final class RSSParserDelegate: NSObject, XMLParserDelegate {
         case "title": currentTitle += string
         case "link": currentLink += string
         case "guid", "id": currentGUID += string
-        case "description", "summary", "content": currentDescription += string
+        case "description", "summary", "content":
+            currentDescription += string
+        case "encoded":
+            currentEncoded += string
         case "pubDate", "published", "updated": currentPubDate += string
         default: break
         }
@@ -79,6 +83,7 @@ private final class RSSParserDelegate: NSObject, XMLParserDelegate {
         currentLink = ""
         currentGUID = ""
         currentDescription = ""
+        currentEncoded = ""
         currentPubDate = ""
     }
 
@@ -91,7 +96,10 @@ private final class RSSParserDelegate: NSObject, XMLParserDelegate {
             ? url.absoluteString
             : currentGUID.trimmingCharacters(in: .whitespacesAndNewlines)
         let title = currentTitle.trimmingCharacters(in: .whitespacesAndNewlines)
-        let excerpt = currentDescription.trimmingCharacters(in: .whitespacesAndNewlines)
+        let rawExcerpt = !currentEncoded.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            ? currentEncoded
+            : currentDescription
+        let excerpt = rawExcerpt.trimmingCharacters(in: .whitespacesAndNewlines)
         let published = RSSDateParser.parse(currentPubDate) ?? Date()
 
         articles.append(

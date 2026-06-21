@@ -1,6 +1,6 @@
 import Foundation
 
-struct SavedLink: Identifiable, Equatable, Sendable {
+struct SavedLink: Identifiable, Equatable, Hashable, Sendable {
     let id: String
     var url: URL
     var title: String

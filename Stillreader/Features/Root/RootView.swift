@@ -2,71 +2,51 @@ import SwiftUI
 
 struct RootView: View {
     @EnvironmentObject private var appState: AppState
+    @AppStorage("appAppearance") private var appAppearance = AppAppearance.dark.rawValue
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @State private var selectedTab: RootTab = .inbox
 
     var body: some View {
         Group {
-            if appState.isReady {
-                #if os(macOS)
-                MacRootView()
-                #else
-                IOSRootView()
-                #endif
+            if horizontalSizeClass == .regular {
+                TabletRootView()
             } else {
-                ProgressView("Loading…")
+                phoneTabView
             }
         }
-        .task { await appState.bootstrap() }
     }
-}
 
-private struct IOSRootView: View {
-    var body: some View {
-        TabView {
-            InboxView()
-                .tabItem { Label("Inbox", systemImage: "tray") }
-            FeedsListView()
-                .tabItem { Label("Feeds", systemImage: "dot.radiowaves.up.forward") }
-            LinksView()
-                .tabItem { Label("Links", systemImage: "link") }
-            SearchView()
-                .tabItem { Label("Search", systemImage: "magnifyingglass") }
-            SettingsView()
-                .tabItem { Label("Settings", systemImage: "gear") }
+    private var phoneTabView: some View {
+        TabView(selection: $selectedTab) {
+            Tab("Inbox", systemImage: "tray", value: RootTab.inbox) {
+                InboxView()
+            }
+            Tab("Feeds", systemImage: "dot.radiowaves.up.forward", value: RootTab.feeds) {
+                FeedsListView()
+            }
+            Tab("Links", systemImage: "link", value: RootTab.links) {
+                lazyTab(.links) { LinksView() }
+            }
+            Tab("Search", systemImage: "magnifyingglass", value: RootTab.search) {
+                lazyTab(.search) { SearchView() }
+            }
+            Tab("Settings", systemImage: "gear", value: RootTab.settings) {
+                SettingsView()
+            }
         }
+        .preferredColorScheme(AppAppearance(rawValue: appAppearance)?.colorScheme)
+        .background(StillPalette.screenBackground(colorScheme).ignoresSafeArea())
     }
-}
 
-private struct MacRootView: View {
-    @State private var section: AppSection? = .inbox
-
-    var body: some View {
-        NavigationSplitView {
-            List(selection: $section) {
-                NavigationLink(value: AppSection.inbox) {
-                    Label("Inbox", systemImage: "tray")
-                }
-                NavigationLink(value: AppSection.feeds) {
-                    Label("Feeds", systemImage: "dot.radiowaves.up.forward")
-                }
-                NavigationLink(value: AppSection.links) {
-                    Label("Links", systemImage: "link")
-                }
-                NavigationLink(value: AppSection.search) {
-                    Label("Search", systemImage: "magnifyingglass")
-                }
-                NavigationLink(value: AppSection.settings) {
-                    Label("Settings", systemImage: "gear")
-                }
-            }
-            .navigationTitle("Stillreader")
-        } detail: {
-            switch section ?? .inbox {
-            case .inbox: InboxView()
-            case .feeds: FeedsListView()
-            case .links: LinksView()
-            case .search: SearchView()
-            case .settings: SettingsView()
-            }
+    @ViewBuilder
+    private func lazyTab<Content: View>(_ tab: RootTab, @ViewBuilder content: () -> Content) -> some View {
+        if selectedTab == tab {
+            content()
+        } else {
+            Color.clear
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .allowsHitTesting(false)
         }
     }
 }
