@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		03F1F241B87D049A55F35687 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 08E0BC0E2471EDDFDC6A899A /* Assets.xcassets */; };
 		08043991F18F1A3FB94A1848 /* InboxItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB37754A5E5873154B2299C /* InboxItem.swift */; };
 		0AE1743F8120F3E6C2C05169 /* Feed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42B8D4D09FBDE9DFECD4CF43 /* Feed.swift */; };
 		0ECCD50794BE0DF5D41849FA /* CalmButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78550C9667CFF0431538C57 /* CalmButtonStyle.swift */; };
@@ -144,6 +145,7 @@
 		02B09E1350F257DD79253916 /* LinkSaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkSaver.swift; sourceTree = "<group>"; };
 		06D5D983C10C830AB4FF9167 /* StillreaderShareExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = StillreaderShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		06F955268A2B80E4200E028A /* StillreaderTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = StillreaderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		08E0BC0E2471EDDFDC6A899A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		097582FFE338CA2DA4F7D86B /* StoragePath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoragePath.swift; sourceTree = "<group>"; };
 		0D90C6973EACB7570A0CD5C8 /* AppMetaStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMetaStore.swift; sourceTree = "<group>"; };
 		13478C830AD367D30A8FB571 /* AppGroupReconciler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroupReconciler.swift; sourceTree = "<group>"; };
@@ -287,6 +289,7 @@
 				81E1615CCAC4DC992CA33865 /* Resources */,
 				00B690AFDAC4E1790F95C0F2 /* Settings */,
 				D1692BDB8385310D4B2A97A4 /* AppState.swift */,
+				08E0BC0E2471EDDFDC6A899A /* Assets.xcassets */,
 				E1D0815BA026A787D50578BB /* StillreaderApp.swift */,
 			);
 			path = Stillreader;
@@ -699,6 +702,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03F1F241B87D049A55F35687 /* Assets.xcassets in Resources */,
 				16898ACBF2206F1AC497FFF4 /* seed-feeds.opml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -945,7 +949,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = K2967B5G85;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -1005,7 +1009,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = K2967B5G85;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
