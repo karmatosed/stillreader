@@ -36,6 +36,12 @@ xcodebuild -scheme Stillreader \
 
 Archive for TestFlight: **Product → Archive** in Xcode (Release, valid signing).
 
+### Troubleshooting Xcode errors
+
+1. **Signing errors** — After cloning, run `xcodegen generate`. The project uses team `K2967B5G85`. To use a different team, edit `DEVELOPMENT_TEAM` in `project.yml` and regenerate.
+2. **Stale red errors in the editor** — **Product → Clean Build Folder**, then **File → Packages → Reset Package Caches**.
+3. **Regenerate project** — If `project.yml` changed: `xcodegen generate` (do not hand-edit `project.pbxproj`).
+
 ## v1 features
 
 - RSS inbox with read / read-later / tag swipe actions
